@@ -40,4 +40,30 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/register', async (req, res) => {
+    const { usuario, senha } = req.body;
+    
+    try {
+        const usuarioExistente = await pool.query(
+            "SELECT * FROM Usuarios WHERE usuario = $1",
+            [usuario]
+        );
+
+        if (usuarioExistente.rows.length > 0) {
+            return res.status(409).json({ message: "Usuário já existe!" });
+        }
+
+        await pool.query(
+            "INSERT INTO Usuarios (usuario, senha) VALUES ($1, crypt($2, gen_salt('bf')))",
+            [usuario, senha]
+        );
+
+        res.status(201).json({ message: "Usuário cadastrado com sucesso!" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ message: "Erro ao registrar o usuário" });
+    }
+});
+
+
 module.exports = router;
