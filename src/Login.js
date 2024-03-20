@@ -167,7 +167,6 @@ const Login = () => {
                 </Modal.Footer>
             </Modal>
         </Container>
-
         <Footer/>
     </Container>
   );
